@@ -22,7 +22,8 @@ app.get('/todos', (req, res) => {
 
 
 app.post('/todos', (req, res) => {
-  db.run('INSERT INTO todos (todo) VALUES (?)', req.body.todo, (err) => {
+    console.log(req.body)
+  db.run('INSERT INTO todos (todo_item) VALUES (?)', req.body.todo_item, (err) => {
     if (err) {
       res.status(500).json({ error: err.message });
     }
@@ -42,7 +43,7 @@ app.delete('/todos/:id', (req, res) => {
 
 
 // if it doesn't exist, create the table
-db.run('CREATE TABLE IF NOT EXISTS todos (id INTEGER PRIMARY KEY AUTOINCREMENT, todo TEXT)');
+db.run('CREATE TABLE IF NOT EXISTS todos (id INTEGER PRIMARY KEY AUTOINCREMENT, todo_item TEXT)');
 
 
 // start the server on port 3000    
