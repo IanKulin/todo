@@ -1,4 +1,4 @@
-// Simple Express ToDo app using SQLite3
+// Simple Express ToDo app using SQLite3 & HTMX
 
 const express = require('express');
 const app = express();
@@ -8,23 +8,15 @@ const port = 3000;
 const sqlite3 = require('sqlite3').verbose();
 const db = new sqlite3.Database('db/todos.sqlite');
 
-app.use(express.json());
+
 app.use(express.static('public'));
+app.use(express.urlencoded({ extended: true }));
 
 
-app.get('/todos', (req, res) => {
+function returnToDoList(rec, res) {
     db.all('SELECT * FROM todos', (err, rows) => {
         if (err) {
-            res.status(500).json({ error: err.message });
-        }
-        res.status(200).json(rows);
-    });
-});
-
-app.get('/hxtodos', (req, res) => {
-    db.all('SELECT * FROM todos', (err, rows) => {
-        if (err) {
-            res.status(500).send(`<li> ${err.message}</li`);
+            return res.status(500).send(`<li> ${err.message}</li`);
         }
        // loop through the rows and create a list item for each
         let list = '';
@@ -34,24 +26,23 @@ app.get('/hxtodos', (req, res) => {
         });
         res.status(200).send(list);
     });
+};   
+
+
+app.get('/todos', (req, res) => {
+    returnToDoList(req, res);
 });
 
 
 app.post('/todos', (req, res) => {
     if (!req.body.todo_item) {
-        return res.status(400).json({ error: 'Missing todo_item field in request body' });
+        return res.status(400).send('Missing todo_item field in request body');
     }
     db.run('INSERT INTO todos (todo_item) VALUES (?)', req.body.todo_item, function(err) {
         if (err) {
-            return res.status(500).json({ error: err.message });
+            return res.status(500).send(`<li> ${err.message}</li>`);
         }
-        // well behaved APIs return the newly created resource
-        db.get('SELECT * FROM todos WHERE id = ?', this.lastID, (err, row) => {
-            if (err) {
-                return res.status(500).json({ error: err.message });
-            }
-            res.status(201).json(row);
-        });
+        returnToDoList(req, res);
     });
 });
 
@@ -59,7 +50,7 @@ app.post('/todos', (req, res) => {
 app.delete('/todos/:id', (req, res) => {
     db.run('DELETE FROM todos WHERE id = ?', req.params.id, (err) => {
         if (err) {
-            res.status(500).json({ error: err.message });
+            res.status(500).send(err.message);
         }
         res.status(200).end();
     });

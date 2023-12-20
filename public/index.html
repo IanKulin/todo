@@ -13,12 +13,13 @@
 <!-- Main section-->
     <main>
         <h1>To do</h1>
-        <ul id="todos_list" hx-get="/hxtodos" hx-trigger="load"></ul>
+        <ul id="todos_list" hx-get="/todos" hx-trigger="load"></ul>
         <!-- the list of todo items from the database gets inserted here-->
 
         <!-- form to add a todo -->
-        <form action="/todos" method="POST">
-            <input type="text" name="todo" id="todo" required>
+        <form hx-post="/todos" hx-target="#todos_list" hx-swap="innerHTML" 
+        hx-on::after-request="this.reset()">
+            <input type="text" name="todo_item" id="todo" required>
             <button type="submit">Add</button>
         </form>
     </main>
