@@ -5,14 +5,12 @@ const app = express();
 const port = 3000;
 
 const sqlite3 = require('sqlite3').verbose();
-const db = new sqlite3.Database('db/test.sqlite');
+const db = new sqlite3.Database('db/todos.sqlite');
 
 app.use(express.json());
 app.use(express.static('public'));
 
-// CRUD REST API endpoints for /todos
 
-// GET /todos
 app.get('/todos', (req, res) => {
   db.all('SELECT * FROM todos', (err, rows) => {
     if (err) {
@@ -22,13 +20,33 @@ app.get('/todos', (req, res) => {
   });
 });
 
+
+app.post('/todos', (req, res) => {
+  db.run('INSERT INTO todos (todo) VALUES (?)', req.body.todo, (err) => {
+    if (err) {
+      res.status(500).json({ error: err.message });
+    }
+    res.json({ message: 'success' });
+  });
+});
+
+
+app.delete('/todos/:id', (req, res) => {
+  db.run('DELETE FROM todos WHERE id = ?', req.params.id, (err) => {
+    if (err) {
+      res.status(500).json({ error: err.message });
+    }
+    res.json({ message: 'success' });
+  });
+});
+
+
 // if it doesn't exist, create the table
 db.run('CREATE TABLE IF NOT EXISTS todos (id INTEGER PRIMARY KEY AUTOINCREMENT, todo TEXT)');
 
-// seed the table with some data
-db.run('INSERT INTO todos (todo) VALUES (?)', ['Buy milk']);
-db.run('INSERT INTO todos (todo) VALUES (?)', ['Buy eggs']);
-db.run('INSERT INTO todos (todo) VALUES (?)', ['Buy bread']);
+
+// start the server on port 3000    
+app.listen(port, () => console.log(`Todo app listening on port ${port}!`));
 
 
 
