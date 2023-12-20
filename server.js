@@ -23,7 +23,8 @@ function returnToDoList(rec, res) {
         let list = '';
         rows.forEach(row => {
             list += `<li>${row.todo_item}`;
-            list += `<button hx-delete="todos/${row.id}" hx-target="closest li" hx-swap="outerHTML">Done</button></li>`;
+            list += `<button hx-delete="todos/${row.id}" hx-target="closest li" `;
+            list += 'hx-swap="outerHTML">Done</button></li>';
         });
         res.status(200).send(list);
     });
