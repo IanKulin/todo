@@ -1,0 +1,38 @@
+<!-- index.html for simple todo app that uses node endpoints to process json-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Todos</title>
+</head>
+<body>
+<!-- Nav bar -->
+    <nav>
+        <ul>
+            <li><a href="/">Home</a></li>
+            <li><a href="/todos">Todos</a></li>
+        </ul>
+    </nav>
+
+<!-- Main section-->
+    <main>
+        <h1>Todos</h1>
+        <ul id="todos"></ul>
+    </main>
+
+    <script>
+        // Get todos from node endpoint
+        fetch('/todos')
+            .then(res => res.json())
+            .then(todos => {
+                // Loop through todos and add to list
+                todos.forEach(todo => {
+                    const li = document.createElement('li');
+                    li.innerHTML = todo.name;
+                    document.querySelector('#todos').appendChild(li);
+                });
+            });
+    </script>
+</body>
+</html>
