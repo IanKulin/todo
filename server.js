@@ -13,12 +13,27 @@ app.use(express.static('public'));
 
 
 app.get('/todos', (req, res) => {
-  db.all('SELECT * FROM todos', (err, rows) => {
-    if (err) {
-      res.status(500).json({ error: err.message });
-    }
-    res.status(200).json(rows);
-  });
+    db.all('SELECT * FROM todos', (err, rows) => {
+        if (err) {
+            res.status(500).json({ error: err.message });
+        }
+        res.status(200).json(rows);
+    });
+});
+
+app.get('/hxtodos', (req, res) => {
+    db.all('SELECT * FROM todos', (err, rows) => {
+        if (err) {
+            res.status(500).send(`<li> ${err.message}</li`);
+        }
+       // loop through the rows and create a list item for each
+        let list = '';
+        rows.forEach(row => {
+            list += `<li>${row.todo_item}`;
+            list += `<button hx-delete="todos/${row.id}" hx-target="closest li" hx-swap="outerHTML">Done</button></li>`;
+        });
+        res.status(200).send(list);
+    });
 });
 
 
@@ -42,12 +57,12 @@ app.post('/todos', (req, res) => {
 
 
 app.delete('/todos/:id', (req, res) => {
-  db.run('DELETE FROM todos WHERE id = ?', req.params.id, (err) => {
-    if (err) {
-      res.status(500).json({ error: err.message });
-    }
-    res.status(204).end();
-  });
+    db.run('DELETE FROM todos WHERE id = ?', req.params.id, (err) => {
+        if (err) {
+            res.status(500).json({ error: err.message });
+        }
+        res.status(200).end();
+    });
 });
 
 
@@ -58,13 +73,13 @@ db.run('CREATE TABLE IF NOT EXISTS todos (id INTEGER PRIMARY KEY AUTOINCREMENT, 
 // close the database gracefully on exit
 process.on('SIGINT', () => {
     db.close((err) => {
-      if (err) {
-        return console.error(err.message);
-      }
-      console.log('Database closed.');
+        if (err) {
+            return console.error(err.message);
+        }
+        console.log('Database closed.');
     });
     process.exit(0);
-  });
+});
 
 
 // start the server on port 3000    
