@@ -4,6 +4,7 @@ const express = require('express');
 const app = express();
 const port = 3000;
 
+
 const sqlite3 = require('sqlite3').verbose();
 const db = new sqlite3.Database('db/todos.sqlite');
 
@@ -16,19 +17,27 @@ app.get('/todos', (req, res) => {
     if (err) {
       res.status(500).json({ error: err.message });
     }
-    res.json(rows);
+    res.status(200).json(rows);
   });
 });
 
 
 app.post('/todos', (req, res) => {
-    console.log(req.body)
-  db.run('INSERT INTO todos (todo_item) VALUES (?)', req.body.todo_item, (err) => {
-    if (err) {
-      res.status(500).json({ error: err.message });
+    if (!req.body.todo_item) {
+        return res.status(400).json({ error: 'Missing todo_item field in request body' });
     }
-    res.json({ message: 'success' });
-  });
+    db.run('INSERT INTO todos (todo_item) VALUES (?)', req.body.todo_item, function(err) {
+        if (err) {
+            return res.status(500).json({ error: err.message });
+        }
+        // well behaved APIs return the newly created resource
+        db.get('SELECT * FROM todos WHERE id = ?', this.lastID, (err, row) => {
+            if (err) {
+                return res.status(500).json({ error: err.message });
+            }
+            res.status(201).json(row);
+        });
+    });
 });
 
 
@@ -37,7 +46,7 @@ app.delete('/todos/:id', (req, res) => {
     if (err) {
       res.status(500).json({ error: err.message });
     }
-    res.json({ message: 'success' });
+    res.status(204).end();
   });
 });
 
@@ -46,8 +55,20 @@ app.delete('/todos/:id', (req, res) => {
 db.run('CREATE TABLE IF NOT EXISTS todos (id INTEGER PRIMARY KEY AUTOINCREMENT, todo_item TEXT)');
 
 
+// close the database gracefully on exit
+process.on('SIGINT', () => {
+    db.close((err) => {
+      if (err) {
+        return console.error(err.message);
+      }
+      console.log('Database closed.');
+    });
+    process.exit(0);
+  });
+
+
 // start the server on port 3000    
-app.listen(port, () => console.log(`Todo app listening on port ${port}!`));
+app.listen(port, () => console.log(`Todo app listening on http://localhost:${port}`));
 
 
 
