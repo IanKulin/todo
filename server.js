@@ -16,7 +16,7 @@ app.use(express.urlencoded({ extended: true }));
 function returnToDoList(rec, res) {
     db.all('SELECT * FROM todos', (err, rows) => {
         if (err) {
-            return res.status(500).send(`<li> ${err.message}</li`);
+            return res.status(500).send(`<li>${err.message}</li`);
         }
        // loop through the rows and create a list item for each
         let list = '';
@@ -40,7 +40,7 @@ app.post('/todos', (req, res) => {
     }
     db.run('INSERT INTO todos (todo_item) VALUES (?)', req.body.todo_item, function(err) {
         if (err) {
-            return res.status(500).send(`<li> ${err.message}</li>`);
+            return res.status(500).send(`<li>${err.message}</li>`);
         }
         returnToDoList(req, res);
     });
@@ -50,7 +50,7 @@ app.post('/todos', (req, res) => {
 app.delete('/todos/:id', (req, res) => {
     db.run('DELETE FROM todos WHERE id = ?', req.params.id, (err) => {
         if (err) {
-            res.status(500).send(err.message);
+            res.status(500).send(`<li>${err.message}</li>`);
         }
         res.status(200).end();
     });
