@@ -13,7 +13,7 @@ app.use(express.static('public'));
 app.use(express.urlencoded({ extended: true }));
 
 
-function returnToDoList(rec, res) {
+function returnToDoList(res) {
     db.all('SELECT * FROM todos', (err, rows) => {
         if (err) {
             console.log(err.message);
@@ -32,7 +32,7 @@ function returnToDoList(rec, res) {
 
 
 app.get('/todos', (req, res) => {
-    returnToDoList(req, res);
+    returnToDoList(res);
 });
 
 
@@ -45,7 +45,7 @@ app.post('/todos', (req, res) => {
             console.log(err.message);
             return res.status(500).send('<li>database error</li>');
         }
-        returnToDoList(req, res);
+        returnToDoList(res);
     });
 });
 
