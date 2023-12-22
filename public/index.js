@@ -23,7 +23,6 @@ function handleDelete(id, li) {
     fetch('/todos/' + id, {
         method: 'DELETE'
     })
-        .then(res => res.json())
         .then(() => {
             li.remove();
         });
@@ -36,7 +35,7 @@ fetch('/todos')
     .then(todos => {
         // Loop through todos and add to list
         todos.forEach(todo => {
-            const li = createTodoItem(todo.todo_item, todo.id); 
+            const li = createTodoItem(todo.todo_item, todo.id);
             document.querySelector('#todos_list').appendChild(li);
         });
     });
@@ -45,13 +44,13 @@ fetch('/todos')
 // handler for adding a todo item
 document.querySelector('form').addEventListener('submit', (e) => {
     e.preventDefault();
-    const todo_item = document.querySelector('#todo').value; 
+    const todo_item = document.querySelector('#todo').value;
     fetch('/todos', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
         },
-        body: JSON.stringify({ todo_item }) 
+        body: JSON.stringify({ todo_item })
     })
         .then(res => res.json())
         .then(data => {
