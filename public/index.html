@@ -17,7 +17,7 @@
         <!-- the list of todo items from the database gets inserted here-->
 
         <!-- form to add a todo -->
-        <form hx-post="/todos" hx-target="#todos_list" hx-swap="innerHTML" 
+        <form hx-post="/todos" hx-target="#todos_list" hx-swap="beforeend" 
         hx-on::after-request="this.reset()">
             <input type="text" name="todo_item" id="todo" required>
             <button type="submit">Add</button>

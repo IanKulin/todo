@@ -13,51 +13,53 @@ app.use(express.static('public'));
 app.use(express.urlencoded({ extended: true }));
 
 
-function returnToDoList(res) {
-    db.all('SELECT * FROM todos', (err, rows) => {
-        if (err) {
-            console.log(err.message);
-            return res.status(500).send('<li>database error</li>');
-        }
-       // loop through the rows and create a list item for each
-        let list = '';
-        rows.forEach(row => {
-            list += `<li>${row.todo_item}`;
-            list += `<button hx-delete="todos/${row.id}" hx-target="closest li" `;
-            list += 'hx-swap="outerHTML">Done</button></li>';
-        });
-        res.status(200).send(list);
-    });
-};   
+function htmlForTodoItem(uid, item_text) {
+  let html = `<li>${item_text}`;
+  html += `<button hx-delete="todos/${uid}" hx-target="closest li" `;
+  html += 'hx-swap="outerHTML">Done</button></li>';
+  return html;
+}
 
 
 app.get('/todos', (req, res) => {
-    returnToDoList(res);
+  db.all('SELECT * FROM todos', (err, rows) => {
+    if (err) {
+      console.log(err.message);
+      return res.status(500).send('<li>database error</li>');
+    }
+    // loop through the rows and create a list item for each
+    let list = '';
+    rows.forEach(row => {
+      list += htmlForTodoItem(row.id, row.todo_item);
+    });
+    res.status(200).send(list);
+  });
 });
 
 
 app.post('/todos', (req, res) => {
-    if (!req.body.todo_item) {
-        return res.status(400).send('Missing todo_item field in request body');
+  if (!req.body.todo_item) {
+    return res.status(400).send('Missing todo_item field in request body');
+  }
+  db.run('INSERT INTO todos (todo_item) VALUES (?)', req.body.todo_item, function (err) {
+    if (err) {
+      console.log(err.message);
+      return res.status(500).send('<li>database error</li>');
     }
-    db.run('INSERT INTO todos (todo_item) VALUES (?)', req.body.todo_item, function(err) {
-        if (err) {
-            console.log(err.message);
-            return res.status(500).send('<li>database error</li>');
-        }
-        returnToDoList(res);
-    });
+    // return just this item for HTMX to insert at the list end
+    res.status(200).send(htmlForTodoItem(this.lastID, req.body.todo_item));
+  });
 });
 
 
 app.delete('/todos/:id', (req, res) => {
-    db.run('DELETE FROM todos WHERE id = ?', req.params.id, (err) => {
-        if (err) {
-            console.log(err.message);
-            return res.status(500).send('<li>database error</li>');
-        }
-        res.status(200).end();
-    });
+  db.run('DELETE FROM todos WHERE id = ?', req.params.id, (err) => {
+    if (err) {
+      console.log(err.message);
+      return res.status(500).send('<li>database error</li>');
+    }
+    res.status(200).end();
+  });
 });
 
 
@@ -67,13 +69,13 @@ db.run('CREATE TABLE IF NOT EXISTS todos (id INTEGER PRIMARY KEY AUTOINCREMENT, 
 
 // close the database gracefully on exit
 process.on('SIGINT', () => {
-    db.close((err) => {
-        if (err) {
-            return console.error(err.message);
-        }
-        console.log('Database closed.');
-    });
-    process.exit(0);
+  db.close((err) => {
+    if (err) {
+      return console.error(err.message);
+    }
+    console.log('Database closed.');
+  });
+  process.exit(0);
 });
 
 
