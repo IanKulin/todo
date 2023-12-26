@@ -1,4 +1,4 @@
-/* eslint-disable react/prop-types */
+import PropTypes from 'prop-types';
 
 
 function TodoList(props) {
@@ -17,4 +17,10 @@ function TodoList(props) {
 }
 
 
-export default TodoList
+TodoList.propTypes = {
+    todos: PropTypes.array.isRequired,
+    onDeleteTodo: PropTypes.func.isRequired
+};
+
+
+export default TodoList;

@@ -46,7 +46,7 @@ function App() {
   return (
     <main>
       <h1>To do</h1>
-      <TodoList todos={todos} onDeleteTodo={deleteTodo}/>
+      <TodoList todos={todos} onDeleteTodo={deleteTodo} />
       <AddTodoForm onAddTodo={addTodo} />
     </main>
   )
