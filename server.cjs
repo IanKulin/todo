@@ -1,4 +1,5 @@
 // Simple Express ToDo app using SQLite3
+/* eslint-disable no-undef */
 
 const express = require('express');
 const app = express();
@@ -54,7 +55,6 @@ app.delete('/todos/:id', (req, res) => {
 // if it doesn't exist, create the table
 db.run('CREATE TABLE IF NOT EXISTS todos (id INTEGER PRIMARY KEY AUTOINCREMENT, todo_item TEXT)');
 
-
 // close the database gracefully on exit
 process.on('SIGINT', () => {
     db.close((err) => {
@@ -69,6 +69,4 @@ process.on('SIGINT', () => {
 
 // start the server on port 3000    
 app.listen(port, () => console.log(`Todo app listening on http://localhost:${port}`));
-
-
 
