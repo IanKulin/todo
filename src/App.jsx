@@ -20,6 +20,7 @@ function App() {
     setIsLoggedIn(pb.authStore.isValid);
   };
 
+  // fetch todos from pocketbase
   useEffect(() => {
     pb.collection("todos")
       .getFullList()
@@ -31,19 +32,16 @@ function App() {
       });
   }, []);
 
+  // add a new todo to pocketbase
   const addTodo = (newTodo) => {
-    // fetch('http://localhost:3000/todos', {
-    //   method: 'POST',
-    //   headers: {
-    //     'Content-Type': 'application/json',
-    //   },
-    //   body: JSON.stringify(newTodo),
-    // })
-    //   .then(response => response.json())
-    //   .then(data => {
-    //     // Update the todos state with the new todo
-    //     setTodos([...todos, data]);
-    //   });
+    pb.collection("todos")
+      .create(newTodo)
+      .then((record) => {
+        setTodos([...todos, record]);
+      })
+      .catch((error) => {
+        console.error(error);
+      });
   };
 
   const deleteTodo = (id) => {
