@@ -21,9 +21,14 @@ function App() {
   };
 
   useEffect(() => {
-    // fetch('http://localhost:3000/todos')
-    //   .then(response => response.json())
-    //   .then(data => setTodos(data));
+    pb.collection("todos")
+      .getFullList()
+      .then((records) => {
+        setTodos(records);
+      })
+      .catch((error) => {
+        console.error(error);
+      });
   }, []);
 
   const addTodo = (newTodo) => {
