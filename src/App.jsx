@@ -44,14 +44,16 @@ function App() {
       });
   };
 
+  // delete a todo from pocketbase
   const deleteTodo = (id) => {
-    // console.log(id);
-    // fetch(`http://localhost:3000/todos/${id}`, {
-    //   method: 'DELETE',
-    // })
-    //   .then(() => {
-    //     setTodos(todos.filter(todo => todo.id !== id));
-    //   });
+    pb.collection("todos")
+      .delete(id)
+      .then(() => {
+        setTodos(todos.filter((todo) => todo.id !== id));
+      })
+      .catch((error) => {
+        console.error(error);
+      });
   };
 
   return (
