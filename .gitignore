@@ -25,3 +25,4 @@ debug
 *.njsproj
 *.sln
 *.sw?
+.env
