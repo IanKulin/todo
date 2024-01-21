@@ -8,3 +8,6 @@ This React version uses:
 - Pocketbase
 
 Different versions are saved in the GitHub repo as [branches](https://github.com/IanKulin/todo/branches) where I've tried out other technologies.
+
+.env
+`VITE_PB_URL=<Pocketbase URL without quotes>`
