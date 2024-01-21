@@ -58,7 +58,7 @@ function App() {
 
   return (
     <main>
-      {isLoggedIn && <CredentialsBar onLogout={handleLogout} />}
+      {isLoggedIn && <CredentialsBar onLogout={handleLogout} user={pb.authStore.model.email} />}
       <h1>To do</h1>
       {isLoggedIn ? (
         <>
